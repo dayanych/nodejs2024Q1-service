@@ -55,9 +55,9 @@ export class AlbumsController {
   @ApiNotFoundResponse({
     description: 'Album not found',
   })
-  @Get(':album_id')
+  @Get(':albumId')
   getAlbumById(@Param() param: AlbumIdParam): Album {
-    return this.albumsService.getAlbumById(param.album_id);
+    return this.albumsService.getAlbumById(param.albumId);
   }
 
   @ApiOkResponse({
@@ -67,12 +67,12 @@ export class AlbumsController {
   @ApiNotFoundResponse({
     description: 'Album not found',
   })
-  @Put(':album_id')
+  @Put(':albumId')
   updateAlbum(
     @Param() param: AlbumIdParam,
     @Body() body: ChangeAlbumBody,
   ): Album {
-    return this.albumsService.updateAlbum(param.album_id, body);
+    return this.albumsService.updateAlbum(param.albumId, body);
   }
 
   @ApiOkResponse({
@@ -81,9 +81,9 @@ export class AlbumsController {
   @ApiNotFoundResponse({
     description: 'Artist not found',
   })
-  @Delete(':album_id')
+  @Delete(':albumId')
   @HttpCode(StatusCodes.NO_CONTENT)
   deleteArtist(@Param() param: AlbumIdParam): void {
-    this.albumsService.deleteAlbum(param.album_id);
+    this.albumsService.deleteAlbum(param.albumId);
   }
 }

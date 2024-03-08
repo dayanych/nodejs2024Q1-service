@@ -49,9 +49,9 @@ export class ArtistsController {
   @ApiNotFoundResponse({
     description: 'Artist not found',
   })
-  @Get(':artist_id')
+  @Get(':artistId')
   getArtistById(@Param() param: ArtistIdParam): Artist {
-    return this.artistsService.getArtistById(param.artist_id);
+    return this.artistsService.getArtistById(param.artistId);
   }
 
   @ApiOkResponse({
@@ -61,12 +61,12 @@ export class ArtistsController {
   @ApiNotFoundResponse({
     description: 'Artist not found',
   })
-  @Put(':artist_id')
+  @Put(':artistId')
   updateArtist(
     @Param() param: ArtistIdParam,
     @Body() artist: ChangeArtistBody,
   ): Artist {
-    return this.artistsService.updateArtist(param.artist_id, artist);
+    return this.artistsService.updateArtist(param.artistId, artist);
   }
 
   @ApiOkResponse({
@@ -75,9 +75,9 @@ export class ArtistsController {
   @ApiNotFoundResponse({
     description: 'Artist not found',
   })
-  @Delete(':artist_id')
+  @Delete(':artistId')
   @HttpCode(StatusCodes.NO_CONTENT)
   deleteArtist(@Param() param: ArtistIdParam): void {
-    this.artistsService.deleteArtist(param.artist_id);
+    this.artistsService.deleteArtist(param.artistId);
   }
 }

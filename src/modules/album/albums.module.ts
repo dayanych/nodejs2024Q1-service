@@ -9,6 +9,6 @@ import { TracksModule } from '../tracks/tracks.module';
   imports: [forwardRef(() => ArtistsModule), TracksModule],
   controllers: [AlbumsController],
   providers: [AlbumsRepository, AlbumsService],
-  exports: [AlbumsRepository],
+  exports: [AlbumsRepository, AlbumsService],
 })
 export class AlbumsModule {}

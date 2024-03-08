@@ -7,5 +7,5 @@ export class ArtistIdParam {
     example: '6839c0fe-ea36-4f17-87af-8509cef7ace1',
   })
   @IsUUID()
-  artist_id: string;
+  artistId: string;
 }
