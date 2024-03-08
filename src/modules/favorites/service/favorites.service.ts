@@ -48,9 +48,9 @@ export class FavoritesService {
   }
 
   addArtist(artistId: string) {
-    this.artistsService.getArtistById(artistId);
+    const artist = this.artistsService.getArtistById(artistId);
 
-    this.favoritesRepository.addArtist(artistId);
+    this.favoritesRepository.addArtist(artist.id);
   }
 
   deleteTrack(trackId: string) {
