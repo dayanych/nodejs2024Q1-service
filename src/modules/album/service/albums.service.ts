@@ -2,12 +2,14 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { Album } from 'src/common/entities/album';
 import { AlbumsRepository } from '../data/albums.repository';
 import { ArtistsService } from 'src/modules/artists/service/artists.service';
+import { TracksRepository } from 'src/modules/tracks/data/tracks.repository';
 
 @Injectable()
 export class AlbumsService {
   constructor(
     private readonly albumsRepository: AlbumsRepository,
     private readonly artistsService: ArtistsService,
+    private readonly tracksRepository: TracksRepository,
   ) {}
 
   getAllAlbums(): Album[] {
@@ -54,6 +56,7 @@ export class AlbumsService {
     }
 
     this.albumsRepository.deleteAlbum(id);
+    this.tracksRepository.deleteAlbumFromTrack(id);
   }
 
   deleteArtistFromAlbum(artistId: string): void {

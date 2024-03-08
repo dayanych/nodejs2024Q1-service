@@ -3,9 +3,10 @@ import { ArtistsModule } from '../artists/artists.module';
 import { AlbumsController } from './presenter/albums.controller';
 import { AlbumsService } from './service/albums.service';
 import { AlbumsRepository } from './data/albums.repository';
+import { TracksModule } from '../tracks/tracks.module';
 
 @Module({
-  imports: [forwardRef(() => ArtistsModule)],
+  imports: [forwardRef(() => ArtistsModule), TracksModule],
   controllers: [AlbumsController],
   providers: [AlbumsRepository, AlbumsService],
   exports: [AlbumsRepository],
