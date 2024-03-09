@@ -3,6 +3,7 @@ import { Artist } from 'src/common/entities/artist';
 import { ArtistsRepository } from '../data/artists.repository';
 import { AlbumsRepository } from 'src/modules/album/data/albums.repository';
 import { TracksRepository } from 'src/modules/tracks/data/tracks.repository';
+import { FavoritesRepository } from 'src/modules/favorites/data/favorites.repository';
 
 @Injectable()
 export class ArtistsService {
@@ -10,6 +11,7 @@ export class ArtistsService {
     private readonly artistsRepository: ArtistsRepository,
     private readonly albumsRepository: AlbumsRepository,
     private readonly tracksRepository: TracksRepository,
+    private readonly favoritesRepository: FavoritesRepository,
   ) {}
 
   getAllArtists(): Artist[] {
@@ -50,5 +52,6 @@ export class ArtistsService {
     this.artistsRepository.deleteArtist(id);
     this.albumsRepository.deleteArtistFromAlbum(artist.id);
     this.tracksRepository.deleteArtistFromTracks(artist.id);
+    this.favoritesRepository.deleteArtist(id);
   }
 }

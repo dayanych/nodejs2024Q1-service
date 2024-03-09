@@ -174,6 +174,9 @@ describe('Favorites (e2e)', () => {
         .get(favoritesRoutes.getAll)
         .set(commonHeaders);
 
+        // throw new Error(JSON.stringify(responseAfterDeletion.body));
+
+
       expect(responseAfterDeletion.status).toBe(StatusCodes.OK);
 
       const artistSearchRes = responseAfterDeletion.body.artists.find(

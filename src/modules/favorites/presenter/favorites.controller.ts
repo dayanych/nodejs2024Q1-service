@@ -18,6 +18,8 @@ export class FavoritesController {
   })
   @Get()
   getAllFavorites() {
+    const favorites = this.favoritesService.getAllFavorites();
+    console.log(favorites);
     return this.favoritesService.getAllFavorites();
   }
 

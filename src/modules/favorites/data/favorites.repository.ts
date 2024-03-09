@@ -10,8 +10,6 @@ export class FavoritesRepository {
   };
 
   getAllFavorites(): Favorites {
-    console.log(this.favorites);
-    
     return this.favorites;
   }
 
@@ -28,21 +26,27 @@ export class FavoritesRepository {
   }
 
   deleteTrack(trackId: string): void {
-    this.favorites.tracks = this.favorites.tracks.filter(
-      (track) => track !== trackId,
-    );
+    const index = this.favorites.tracks.indexOf(trackId);
+
+    if (index !== -1) {
+      this.favorites.tracks.splice(index, 1);
+    }
   }
 
   deleteAlbum(albumId: string): void {
-    this.favorites.albums = this.favorites.albums.filter(
-      (album) => album !== albumId,
-    );
+    const index = this.favorites.albums.indexOf(albumId);
+
+    if (index !== -1) {
+      this.favorites.albums.splice(index, 1);
+    }
   }
 
   deleteArtist(artistId: string): void {
-    this.favorites.artists = this.favorites.artists.filter(
-      (artist) => artist !== artistId,
-    );
+    const index = this.favorites.artists.indexOf(artistId);
+
+    if (index !== -1) {
+      this.favorites.artists.splice(index, 1);
+    }
   }
 
   checkIfTrackExistsFavorite(trackId: string): boolean {

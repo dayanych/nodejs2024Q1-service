@@ -1,10 +1,14 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { TracksRepository } from '../data/tracks.repository';
 import { Track } from 'src/common/entities/track';
+import { FavoritesRepository } from 'src/modules/favorites/data/favorites.repository';
 
 @Injectable()
 export class TracksService {
-  constructor(private readonly tracksRepository: TracksRepository) {}
+  constructor(
+    private readonly tracksRepository: TracksRepository,
+    private readonly favoritesRepository: FavoritesRepository,
+  ) {}
 
   getAllTracks(): Track[] {
     return this.tracksRepository.getAllTracks();
@@ -41,5 +45,6 @@ export class TracksService {
     }
 
     this.tracksRepository.deleteTrack(id);
+    this.favoritesRepository.deleteTrack(id);
   }
 }

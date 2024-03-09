@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { AlbumsService } from 'src/modules/album/service/albums.service';
 import { ArtistsService } from 'src/modules/artists/service/artists.service';
 import { FavoritesRepository } from '../data/favorites.repository';
@@ -36,21 +40,33 @@ export class FavoritesService {
   }
 
   addTrack(trackId: string) {
-    this.tracksService.getTrackById(trackId);
+    try {
+      this.tracksService.getTrackById(trackId);
+    } catch {
+      throw new UnprocessableEntityException('Entity absence');
+    }
 
     this.favoritesRepository.addTrack(trackId);
   }
 
   addAlbum(albumId: string) {
-    this.albumsService.getAlbumById(albumId);
+    try {
+      this.albumsService.getAlbumById(albumId);
+    } catch {
+      throw new UnprocessableEntityException('Entity absence');
+    }
 
     this.favoritesRepository.addAlbum(albumId);
   }
 
   addArtist(artistId: string) {
-    const artist = this.artistsService.getArtistById(artistId);
+    try {
+      this.artistsService.getArtistById(artistId);
+    } catch {
+      throw new UnprocessableEntityException('Artist absence');
+    }
 
-    this.favoritesRepository.addArtist(artist.id);
+    this.favoritesRepository.addArtist(artistId);
   }
 
   deleteTrack(trackId: string) {
