@@ -1,0 +1,68 @@
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { Album } from 'src/common/entities/album';
+import { ArtistsService } from 'src/modules/artists/service/artists.service';
+import { TracksRepository } from 'src/modules/tracks/data/tracks.repository';
+import { FavoritesRepository } from 'src/modules/favorites/data/favorites.repository';
+import { AlbumsRepository } from '../data/albums.repository';
+
+@Injectable()
+export class AlbumsService {
+  constructor(
+    private readonly albumsRepository: AlbumsRepository,
+    private readonly artistsService: ArtistsService,
+    private readonly tracksRepository: TracksRepository,
+    private readonly favoritesRepository: FavoritesRepository,
+  ) {}
+
+  getAllAlbums(): Album[] {
+    return this.albumsRepository.getAllAlbums();
+  }
+
+  getAlbumById(id: string): Album {
+    const album = this.albumsRepository.getAlbumById(id);
+
+    if (!album) {
+      throw new NotFoundException(`Album with id ${id} not found`);
+    }
+
+    return album;
+  }
+
+  addAlbum(album: { name: string; year: number; artistId: string }): Album {
+    if (album.artistId) {
+      this.artistsService.getArtistById(album.artistId);
+    }
+
+    return this.albumsRepository.addAlbum(album);
+  }
+
+  updateAlbum(id: string, changes: { name: string; year: number }): Album {
+    const album = this.albumsRepository.getAlbumById(id);
+
+    if (!album) {
+      throw new NotFoundException(`Album with id ${id} not found`);
+    }
+
+    if (album.artistId) {
+      this.artistsService.getArtistById(album.artistId);
+    }
+
+    return this.albumsRepository.changeAlbum(id, changes);
+  }
+
+  deleteAlbum(id: string): void {
+    const album = this.albumsRepository.getAlbumById(id);
+
+    if (!album) {
+      throw new NotFoundException(`Album with id ${id} not found`);
+    }
+
+    this.albumsRepository.deleteAlbum(id);
+    this.tracksRepository.deleteAlbumFromTrack(id);
+    this.favoritesRepository.deleteAlbum(id);
+  }
+
+  deleteArtistFromAlbum(artistId: string): void {
+    this.albumsRepository.deleteArtistFromAlbum(artistId);
+  }
+}
