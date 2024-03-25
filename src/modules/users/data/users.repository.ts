@@ -23,17 +23,22 @@ export class UsersRepository {
         id: uuidv4(),
         login: user.login,
         password: user.password,
-        version: 1,
       },
     });
 
     return newUser;
   }
 
-  updateUser(id: string, changes: { password: string }): Promise<User | null> {
+  updateUser(
+    id: string,
+    changes: { password: string; version: number },
+  ): Promise<User | null> {
     return this.prismaRepository.user.update({
       where: { id },
-      data: changes,
+      data: {
+        password: changes.password,
+        version: changes.version,
+      },
     });
   }
 

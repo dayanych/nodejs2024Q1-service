@@ -2,6 +2,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { Injectable } from '@nestjs/common';
 import { Track } from 'src/common/entities/track';
 import { PrismaRepository } from 'src/modules/prisma/data/prisma.repository';
+import { TrackDto } from '../dto/track.dto';
 
 @Injectable()
 export class TracksRepository {
@@ -17,7 +18,7 @@ export class TracksRepository {
     });
   }
 
-  async addTrack(dto: Omit<Track, 'id'>): Promise<Track> {
+  async addTrack(dto: TrackDto): Promise<Track> {
     const newTrack = this.prismaRepository.track.create({
       data: {
         id: uuidv4(),
@@ -31,7 +32,7 @@ export class TracksRepository {
     return newTrack;
   }
 
-  changeTrack(id: string, changes: Omit<Track, 'id'>): Promise<Track> {
+  changeTrack(id: string, changes: TrackDto): Promise<Track> {
     return this.prismaRepository.track.update({
       where: { id },
       data: changes,

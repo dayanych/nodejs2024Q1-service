@@ -44,6 +44,7 @@ export class UsersService {
 
     const updatedUser = this.usersRepository.updateUser(id, {
       password: changes.newPassword,
+      version: user.version + 1,
     });
 
     return updatedUser;

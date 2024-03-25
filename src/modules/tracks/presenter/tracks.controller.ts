@@ -10,26 +10,31 @@ import {
 } from '@nestjs/common';
 import { ApiNotFoundResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { TracksService } from '../service/tracks.service';
-import { Track } from 'src/common/entities/track';
 import { GetAllTracksResponse } from './responses/get-all-tracks.response';
 import { TrackResponse } from './responses/track.response';
 import { TrackIdParam } from './params/track-id.param';
 import { CreateTrackBody } from './bodies/create-track.body';
 import { ChangeTrackBody } from './bodies/change-track.body';
 import { StatusCodes } from 'http-status-codes';
+import { TrackResource } from './resources/track.resource';
 
 @ApiTags('Tracks')
 @Controller('/track')
 export class TracksController {
-  constructor(private readonly tracksService: TracksService) {}
+  constructor(
+    private readonly tracksService: TracksService,
+    private readonly trackResource: TrackResource,
+  ) {}
 
   @ApiOkResponse({
     description: 'Returns all tracks',
     type: GetAllTracksResponse,
   })
   @Get()
-  getAllTracks(): Promise<Track[]> {
-    return this.tracksService.getAllTracks();
+  async getAllTracks(): Promise<TrackResponse[]> {
+    const tracks = await this.tracksService.getAllTracks();
+
+    return tracks.map((track) => this.trackResource.convert(track));
   }
 
   @ApiOkResponse({
@@ -40,8 +45,10 @@ export class TracksController {
     description: 'Track not found',
   })
   @Get(':trackId')
-  getTrackById(@Param() param: TrackIdParam): Promise<Track> {
-    return this.tracksService.getTrackById(param.trackId);
+  async getTrackById(@Param() param: TrackIdParam): Promise<TrackResponse> {
+    const track = await this.tracksService.getTrackById(param.trackId);
+
+    return this.trackResource.convert(track);
   }
 
   @ApiOkResponse({
@@ -50,8 +57,10 @@ export class TracksController {
   })
   @Post()
   @HttpCode(StatusCodes.CREATED)
-  createTrack(@Body() body: CreateTrackBody): Promise<Track> {
-    return this.tracksService.addTrack(body);
+  async createTrack(@Body() body: CreateTrackBody): Promise<TrackResponse> {
+    const track = await this.tracksService.addTrack(body);
+
+    return this.trackResource.convert(track);
   }
 
   @ApiOkResponse({
@@ -62,11 +71,13 @@ export class TracksController {
     description: 'Track not found',
   })
   @Put(':trackId')
-  changeTrack(
+  async changeTrack(
     @Param() param: TrackIdParam,
     @Body() body: ChangeTrackBody,
-  ): Promise<Track> {
-    return this.tracksService.changeTrack(param.trackId, body);
+  ): Promise<TrackResponse> {
+    const track = await this.tracksService.changeTrack(param.trackId, body);
+
+    return this.trackResource.convert(track);
   }
 
   @ApiOkResponse({

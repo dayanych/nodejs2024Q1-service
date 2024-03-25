@@ -6,6 +6,7 @@ import { AlbumsRepository } from './data/albums.repository';
 import { TracksModule } from '../tracks/tracks.module';
 import { FavoritesModule } from '../favorites/favorites.module';
 import { PrismaModule } from '../prisma/prisma.module';
+import { AlbumResource } from './presenter/resources/album.resource';
 
 @Module({
   imports: [
@@ -15,7 +16,7 @@ import { PrismaModule } from '../prisma/prisma.module';
     PrismaModule,
   ],
   controllers: [AlbumsController],
-  providers: [AlbumsRepository, AlbumsService],
-  exports: [AlbumsRepository, AlbumsService],
+  providers: [AlbumsRepository, AlbumsService, AlbumResource],
+  exports: [AlbumsRepository, AlbumsService, AlbumResource],
 })
 export class AlbumsModule {}

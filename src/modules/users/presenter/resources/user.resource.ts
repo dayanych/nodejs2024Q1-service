@@ -1,7 +1,8 @@
-import { User, UserWithoutPassword } from 'src/common/entities/user';
+import { User } from 'src/common/entities/user';
+import { UserResponse } from '../responses/user.response';
 
 export class UserResource {
-  convert(payload: User): UserWithoutPassword {
+  convert(payload: User): UserResponse {
     return {
       id: payload.id,
       login: payload.login,

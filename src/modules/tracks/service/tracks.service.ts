@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { TracksRepository } from '../data/tracks.repository';
 import { Track } from 'src/common/entities/track';
 import { FavoritesRepository } from 'src/modules/favorites/data/favorites.repository';
+import { TrackDto } from '../dto/track.dto';
 
 @Injectable()
 export class TracksService {
@@ -24,11 +25,11 @@ export class TracksService {
     return track;
   }
 
-  addTrack(dto: Omit<Track, 'id'>): Promise<Track> {
+  addTrack(dto: TrackDto): Promise<Track> {
     return this.tracksRepository.addTrack(dto);
   }
 
-  async changeTrack(id: string, changes: Omit<Track, 'id'>): Promise<Track> {
+  async changeTrack(id: string, changes: TrackDto): Promise<Track> {
     const track = await this.tracksRepository.getTrackById(id);
 
     if (!track) {

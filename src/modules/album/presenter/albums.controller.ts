@@ -15,37 +15,44 @@ import { AlbumIdParam } from './params/album-id.param';
 import { AlbumResponse } from './responses/album.response';
 import { CreateAlbumBody } from './bodies/create-album.body';
 import { StatusCodes } from 'http-status-codes';
-import { Album } from 'src/common/entities/album';
 import { ChangeAlbumBody } from './bodies/change-album.body';
+import { AlbumResource } from './resources/album.resource';
 
 @ApiTags('Albums')
 @Controller('album')
 export class AlbumsController {
-  constructor(private readonly albumsService: AlbumsService) {}
+  constructor(
+    private readonly albumsService: AlbumsService,
+    private readonly albumResource: AlbumResource,
+  ) {}
 
   @ApiOkResponse({
     description: 'Returns all albums',
     type: GetAllAlbumsResponse,
   })
   @Get()
-  getAllAlbums(): Promise<Album[]> {
-    return this.albumsService.getAllAlbums();
+  async getAllAlbums(): Promise<AlbumResponse[]> {
+    const albums = await this.albumsService.getAllAlbums();
+
+    return albums.map((album) => this.albumResource.convert(album));
   }
 
   @ApiOkResponse({
-    type: GetAllAlbumsResponse,
+    type: AlbumResponse,
     description: 'Returns all albums',
   })
   @Post()
   @HttpCode(StatusCodes.CREATED)
-  addAlbum(@Body() album: CreateAlbumBody): Promise<Album> {
+  async addAlbum(@Body() body: CreateAlbumBody): Promise<AlbumResponse> {
     const payload = {
-      name: album.name,
-      year: album.year,
-      artistId: album.artistId,
+      name: body.name,
+      year: body.year,
+      artistId: body.artistId,
     };
 
-    return this.albumsService.addAlbum(payload);
+    const albums = await this.albumsService.addAlbum(payload);
+
+    return this.albumResource.convert(albums);
   }
 
   @ApiOkResponse({
@@ -56,8 +63,10 @@ export class AlbumsController {
     description: 'Album not found',
   })
   @Get(':albumId')
-  getAlbumById(@Param() param: AlbumIdParam): Promise<Album> {
-    return this.albumsService.getAlbumById(param.albumId);
+  async getAlbumById(@Param() param: AlbumIdParam): Promise<AlbumResponse> {
+    const album = await this.albumsService.getAlbumById(param.albumId);
+
+    return this.albumResource.convert(album);
   }
 
   @ApiOkResponse({
@@ -68,11 +77,13 @@ export class AlbumsController {
     description: 'Album not found',
   })
   @Put(':albumId')
-  updateAlbum(
+  async updateAlbum(
     @Param() param: AlbumIdParam,
     @Body() body: ChangeAlbumBody,
-  ): Promise<Album> {
-    return this.albumsService.updateAlbum(param.albumId, body);
+  ): Promise<AlbumResponse> {
+    const album = await this.albumsService.updateAlbum(param.albumId, body);
+
+    return this.albumResource.convert(album);
   }
 
   @ApiOkResponse({

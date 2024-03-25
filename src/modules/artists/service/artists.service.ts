@@ -18,8 +18,8 @@ export class ArtistsService {
     return this.artistsRepository.getAllArtists();
   }
 
-  getArtistById(id: string): Promise<Artist | null> {
-    const artist = this.artistsRepository.getArtistById(id);
+  async getArtistById(id: string): Promise<Artist | null> {
+    const artist = await this.artistsRepository.getArtistById(id);
 
     if (!artist) {
       throw new NotFoundException(`Artist with id ${id} not found`);

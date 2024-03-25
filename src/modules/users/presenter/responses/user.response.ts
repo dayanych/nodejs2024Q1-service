@@ -15,9 +15,9 @@ export class UserResponse {
 
   @ApiProperty({
     description: 'User version',
-    example: '1',
+    example: 1,
   })
-  version: string;
+  version: number;
 
   @ApiProperty({
     description: 'User creation date',

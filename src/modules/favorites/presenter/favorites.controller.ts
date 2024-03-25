@@ -6,20 +6,25 @@ import { TrackIdParam } from 'src/modules/tracks/presenter/params/track-id.param
 import { AlbumIdParam } from 'src/modules/album/presenter/params/album-id.param';
 import { ArtistIdParam } from 'src/modules/artists/presenter/params/artist-id.param';
 import { StatusCodes } from 'http-status-codes';
-import { Favorites } from 'src/common/entities/favorites';
+import { FavoritesResource } from './resources/favorites.resource';
 
 @ApiTags('Favorites')
 @Controller('favs')
 export class FavoritesController {
-  constructor(private readonly favoritesService: FavoritesService) {}
+  constructor(
+    private readonly favoritesService: FavoritesService,
+    private readonly favoritesResource: FavoritesResource,
+  ) {}
 
   @ApiOkResponse({
     description: 'Returns all favorites',
     type: FavoriteResponse,
   })
   @Get()
-  getAllFavorites(): Promise<Favorites> {
-    return this.favoritesService.getAllFavorites();
+  async getAllFavorites(): Promise<FavoriteResponse> {
+    const favorites = await this.favoritesService.getAllFavorites();
+
+    return this.favoritesResource.convert(favorites);
   }
 
   @ApiOkResponse({

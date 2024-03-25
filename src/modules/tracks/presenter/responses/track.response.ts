@@ -3,9 +3,9 @@ import { ApiProperty } from '@nestjs/swagger';
 export class TrackResponse {
   @ApiProperty({
     description: 'Id of the track',
-    example: 1,
+    example: '1',
   })
-  id: number;
+  id: string;
 
   @ApiProperty({
     description: 'Name of the track',

@@ -9,7 +9,6 @@ import {
   Put,
 } from '@nestjs/common';
 import { ApiNotFoundResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
-import { Artist } from 'src/common/entities/artist';
 import { ArtistsService } from '../service/artists.service';
 import { GetAllArtistsResponse } from './responses/get-all-artists.response';
 import { ArtistIdParam } from './params/artist-id.param';
@@ -17,19 +16,25 @@ import { ArtistResponse } from './responses/artist.response';
 import { CreateArtistBody } from './bodies/create-artist.body';
 import { ChangeArtistBody } from './bodies/change-artist.body';
 import { StatusCodes } from 'http-status-codes';
+import { ArtistResource } from './resources/artist.resource';
 
 @ApiTags('Artists')
 @Controller('/artist')
 export class ArtistsController {
-  constructor(private readonly artistsService: ArtistsService) {}
+  constructor(
+    private readonly artistsService: ArtistsService,
+    private readonly artistResource: ArtistResource,
+  ) {}
 
   @ApiOkResponse({
     type: GetAllArtistsResponse,
     description: 'List of artists',
   })
   @Get()
-  getAllArtists(): Promise<Artist[]> {
-    return this.artistsService.getAllArtists();
+  async getAllArtists(): Promise<ArtistResponse[]> {
+    const artists = await this.artistsService.getAllArtists();
+
+    return artists.map((artist) => this.artistResource.convert(artist));
   }
 
   @ApiOkResponse({
@@ -38,8 +43,10 @@ export class ArtistsController {
   })
   @Post()
   @HttpCode(StatusCodes.CREATED)
-  addArtist(@Body() artist: CreateArtistBody): Promise<Artist> {
-    return this.artistsService.addArtist(artist);
+  async addArtist(@Body() body: CreateArtistBody): Promise<ArtistResponse> {
+    const artist = await this.artistsService.addArtist(body);
+
+    return this.artistResource.convert(artist);
   }
 
   @ApiOkResponse({
@@ -50,8 +57,10 @@ export class ArtistsController {
     description: 'Artist not found',
   })
   @Get(':artistId')
-  getArtistById(@Param() param: ArtistIdParam): Promise<Artist> {
-    return this.artistsService.getArtistById(param.artistId);
+  async getArtistById(@Param() param: ArtistIdParam): Promise<ArtistResponse> {
+    const artist = await this.artistsService.getArtistById(param.artistId);
+
+    return this.artistResource.convert(artist);
   }
 
   @ApiOkResponse({
@@ -62,11 +71,13 @@ export class ArtistsController {
     description: 'Artist not found',
   })
   @Put(':artistId')
-  updateArtist(
+  async updateArtist(
     @Param() param: ArtistIdParam,
-    @Body() artist: ChangeArtistBody,
-  ): Promise<Artist> {
-    return this.artistsService.updateArtist(param.artistId, artist);
+    @Body() body: ChangeArtistBody,
+  ): Promise<ArtistResponse> {
+    const artist = await this.artistsService.updateArtist(param.artistId, body);
+
+    return this.artistResource.convert(artist);
   }
 
   @ApiOkResponse({

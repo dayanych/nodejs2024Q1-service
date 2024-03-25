@@ -6,6 +6,7 @@ import { ArtistsService } from './service/artists.service';
 import { TracksModule } from '../tracks/tracks.module';
 import { FavoritesModule } from '../favorites/favorites.module';
 import { PrismaModule } from '../prisma/prisma.module';
+import { ArtistResource } from './presenter/resources/artist.resource';
 
 @Module({
   imports: [
@@ -15,7 +16,7 @@ import { PrismaModule } from '../prisma/prisma.module';
     PrismaModule,
   ],
   controllers: [ArtistsController],
-  providers: [ArtistsRepository, ArtistsService],
-  exports: [ArtistsService, ArtistsRepository],
+  providers: [ArtistsRepository, ArtistsService, ArtistResource],
+  exports: [ArtistsService, ArtistsRepository, ArtistResource],
 })
 export class ArtistsModule {}

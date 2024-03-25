@@ -64,8 +64,6 @@ export class FavoritesRepository {
       await this.generateFavorites();
     }
 
-    console.log(this.favoritesId);
-
     await this.prismaRepository.artist.updateMany({
       where: { id: artistId },
       data: { favoriteId: this.favoritesId },
