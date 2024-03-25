@@ -1,4 +1,11 @@
-node_modules/
+/dist
+/node_modules
+
+Dockerfile
+.dockerignore
+node_modules
+npm-debug.log
+dist
 
 .env
 .vscode

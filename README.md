@@ -11,6 +11,25 @@
 git clone {repository URL}
 ```
 
+## For Docker
+
+## Preparing
+1. Install [Docker](https://docs.docker.com/engine/install/)
+2. Create .env by using .env.example
+
+## Run Docker
+```
+npm run docker:up
+```
+
+## Run scan for security vulnerabilities
+```
+npm run docker:scan
+```
+
+## Link to repository on DockerHub
+[Link](https://hub.docker.com/r/dayanych/nodejs2024q1-service-app)
+
 ## Installing NPM modules
 
 ```

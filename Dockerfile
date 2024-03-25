@@ -1,9 +1,9 @@
-FROM node:20
+FROM node:20-alpine
 
 WORKDIR /app
 
 COPY ./ .
 
-RUN npm i
+RUN npm ci
 
-CMD [ "npm", "run", "start:dev" ]
+CMD ["npm", "run", "dockerfile:start"]
