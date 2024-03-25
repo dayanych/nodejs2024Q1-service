@@ -28,7 +28,7 @@ export class TracksController {
     type: GetAllTracksResponse,
   })
   @Get()
-  getAllTracks(): Track[] {
+  getAllTracks(): Promise<Track[]> {
     return this.tracksService.getAllTracks();
   }
 
@@ -40,7 +40,7 @@ export class TracksController {
     description: 'Track not found',
   })
   @Get(':trackId')
-  getTrackById(@Param() param: TrackIdParam): Track {
+  getTrackById(@Param() param: TrackIdParam): Promise<Track> {
     return this.tracksService.getTrackById(param.trackId);
   }
 
@@ -50,7 +50,7 @@ export class TracksController {
   })
   @Post()
   @HttpCode(StatusCodes.CREATED)
-  createTrack(@Body() body: CreateTrackBody): Track {
+  createTrack(@Body() body: CreateTrackBody): Promise<Track> {
     return this.tracksService.addTrack(body);
   }
 
@@ -65,7 +65,7 @@ export class TracksController {
   changeTrack(
     @Param() param: TrackIdParam,
     @Body() body: ChangeTrackBody,
-  ): Track {
+  ): Promise<Track> {
     return this.tracksService.changeTrack(param.trackId, body);
   }
 
@@ -77,7 +77,7 @@ export class TracksController {
   })
   @Delete(':trackId')
   @HttpCode(StatusCodes.NO_CONTENT)
-  deleteTrack(@Param() param: TrackIdParam): void {
-    this.tracksService.deleteTrack(param.trackId);
+  async deleteTrack(@Param() param: TrackIdParam): Promise<void> {
+    await this.tracksService.deleteTrack(param.trackId);
   }
 }

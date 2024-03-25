@@ -28,7 +28,7 @@ export class AlbumsController {
     type: GetAllAlbumsResponse,
   })
   @Get()
-  getAllAlbums(): Album[] {
+  getAllAlbums(): Promise<Album[]> {
     return this.albumsService.getAllAlbums();
   }
 
@@ -38,7 +38,7 @@ export class AlbumsController {
   })
   @Post()
   @HttpCode(StatusCodes.CREATED)
-  addAlbum(@Body() album: CreateAlbumBody): Album {
+  addAlbum(@Body() album: CreateAlbumBody): Promise<Album> {
     const payload = {
       name: album.name,
       year: album.year,
@@ -56,7 +56,7 @@ export class AlbumsController {
     description: 'Album not found',
   })
   @Get(':albumId')
-  getAlbumById(@Param() param: AlbumIdParam): Album {
+  getAlbumById(@Param() param: AlbumIdParam): Promise<Album> {
     return this.albumsService.getAlbumById(param.albumId);
   }
 
@@ -71,7 +71,7 @@ export class AlbumsController {
   updateAlbum(
     @Param() param: AlbumIdParam,
     @Body() body: ChangeAlbumBody,
-  ): Album {
+  ): Promise<Album> {
     return this.albumsService.updateAlbum(param.albumId, body);
   }
 
@@ -83,7 +83,7 @@ export class AlbumsController {
   })
   @Delete(':albumId')
   @HttpCode(StatusCodes.NO_CONTENT)
-  deleteArtist(@Param() param: AlbumIdParam): void {
-    this.albumsService.deleteAlbum(param.albumId);
+  async deleteArtist(@Param() param: AlbumIdParam): Promise<void> {
+    await this.albumsService.deleteAlbum(param.albumId);
   }
 }

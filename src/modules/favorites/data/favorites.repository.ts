@@ -1,63 +1,137 @@
+import { v4 as uuidv4 } from 'uuid';
 import { Injectable } from '@nestjs/common';
 import { Favorites } from 'src/common/entities/favorites';
+import { PrismaRepository } from 'src/modules/prisma/data/prisma.repository';
 
 @Injectable()
 export class FavoritesRepository {
-  private favorites: Favorites = {
-    artists: [],
-    albums: [],
-    tracks: [],
-  };
-
-  getAllFavorites(): Favorites {
-    return this.favorites;
+  favoritesId: string | null;
+  constructor(private prismaRepository: PrismaRepository) {
+    this.favoritesId = null;
   }
 
-  addTrack(trackId: string): void {
-    this.favorites.tracks.push(trackId);
+  async generateFavorites(): Promise<void> {
+    const favorites = await this.prismaRepository.favorites.create({
+      data: {
+        id: uuidv4(),
+      },
+    });
+
+    this.favoritesId = favorites.id;
   }
 
-  addAlbum(albumId: string): void {
-    this.favorites.albums.push(albumId);
-  }
-
-  addArtist(artistId: string): void {
-    this.favorites.artists.push(artistId);
-  }
-
-  deleteTrack(trackId: string): void {
-    const index = this.favorites.tracks.indexOf(trackId);
-
-    if (index !== -1) {
-      this.favorites.tracks.splice(index, 1);
+  async getFavoritesWithRelations(): Promise<Favorites> {
+    if (!this.favoritesId) {
+      await this.generateFavorites();
     }
+
+    return this.prismaRepository.favorites.findUnique({
+      where: {
+        id: this.favoritesId,
+      },
+      include: {
+        artists: true,
+        albums: true,
+        tracks: true,
+      },
+    });
   }
 
-  deleteAlbum(albumId: string): void {
-    const index = this.favorites.albums.indexOf(albumId);
-
-    if (index !== -1) {
-      this.favorites.albums.splice(index, 1);
+  async addTrackToFav(trackId: string): Promise<void> {
+    if (!this.favoritesId) {
+      await this.generateFavorites();
     }
+
+    await this.prismaRepository.track.updateMany({
+      where: { id: trackId },
+      data: { favoriteId: this.favoritesId },
+    });
   }
 
-  deleteArtist(artistId: string): void {
-    const index = this.favorites.artists.indexOf(artistId);
-
-    if (index !== -1) {
-      this.favorites.artists.splice(index, 1);
+  async addAlbumToFav(albumId: string): Promise<void> {
+    if (!this.favoritesId) {
+      await this.generateFavorites();
     }
+
+    await this.prismaRepository.album.updateMany({
+      where: { id: albumId },
+      data: { favoriteId: this.favoritesId },
+    });
   }
 
-  checkIfTrackExistsFavorite(trackId: string): boolean {
-    return this.favorites.tracks.includes(trackId);
+  async addArtistToFav(artistId: string): Promise<void> {
+    if (!this.favoritesId) {
+      await this.generateFavorites();
+    }
+
+    console.log(this.favoritesId);
+
+    await this.prismaRepository.artist.updateMany({
+      where: { id: artistId },
+      data: { favoriteId: this.favoritesId },
+    });
   }
 
-  checkIfArtistExistsFavorite(artistId: string): boolean {
-    return this.favorites.artists.includes(artistId);
+  async deleteTrackFromFav(trackId: string): Promise<void> {
+    if (!this.favoritesId) {
+      await this.generateFavorites();
+    }
+
+    await this.prismaRepository.track.updateMany({
+      where: { id: trackId },
+      data: { favoriteId: null },
+    });
   }
 
-  checkIfAlbumExistsFavorite(albumId: string): boolean {
-    return this.favorites.albums.includes(albumId);
+  async deleteAlbumFromFavs(albumId: string): Promise<void> {
+    if (!this.favoritesId) {
+      await this.generateFavorites();
+    }
+
+    await this.prismaRepository.album.updateMany({
+      where: { id: albumId },
+      data: { favoriteId: null },
+    });
+  }
+
+  async deleteArtistFromFav(artistId: string): Promise<void> {
+    if (!this.favoritesId) {
+      await this.generateFavorites();
+    }
+
+    await this.prismaRepository.artist.updateMany({
+      where: { id: artistId },
+      data: { favoriteId: null },
+    });
+  }
+
+  async checkIfTrackExistsFavorite(trackId: string): Promise<boolean> {
+    if (!this.favoritesId) {
+      await this.generateFavorites();
+    }
+
+    const favorites = await this.getFavoritesWithRelations();
+
+    return favorites.tracks.some((track) => track.id === trackId);
+  }
+
+  async checkIfArtistExistsFavorite(artistId: string): Promise<boolean> {
+    if (!this.favoritesId) {
+      await this.generateFavorites();
+    }
+
+    const favorites = await this.getFavoritesWithRelations();
+
+    return favorites.artists.some((artist) => artist.id === artistId);
+  }
+
+  async checkIfAlbumExistsFavorite(albumId: string): Promise<boolean> {
+    if (!this.favoritesId) {
+      await this.generateFavorites();
+    }
+
+    const favorites = await this.getFavoritesWithRelations();
+
+    return favorites.albums.some((album) => album.id === albumId);
   }
 }

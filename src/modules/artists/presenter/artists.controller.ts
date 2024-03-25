@@ -28,7 +28,7 @@ export class ArtistsController {
     description: 'List of artists',
   })
   @Get()
-  getAllArtists(): Artist[] {
+  getAllArtists(): Promise<Artist[]> {
     return this.artistsService.getAllArtists();
   }
 
@@ -38,7 +38,7 @@ export class ArtistsController {
   })
   @Post()
   @HttpCode(StatusCodes.CREATED)
-  addArtist(@Body() artist: CreateArtistBody): Artist {
+  addArtist(@Body() artist: CreateArtistBody): Promise<Artist> {
     return this.artistsService.addArtist(artist);
   }
 
@@ -50,7 +50,7 @@ export class ArtistsController {
     description: 'Artist not found',
   })
   @Get(':artistId')
-  getArtistById(@Param() param: ArtistIdParam): Artist {
+  getArtistById(@Param() param: ArtistIdParam): Promise<Artist> {
     return this.artistsService.getArtistById(param.artistId);
   }
 
@@ -65,7 +65,7 @@ export class ArtistsController {
   updateArtist(
     @Param() param: ArtistIdParam,
     @Body() artist: ChangeArtistBody,
-  ): Artist {
+  ): Promise<Artist> {
     return this.artistsService.updateArtist(param.artistId, artist);
   }
 
@@ -77,7 +77,7 @@ export class ArtistsController {
   })
   @Delete(':artistId')
   @HttpCode(StatusCodes.NO_CONTENT)
-  deleteArtist(@Param() param: ArtistIdParam): void {
-    this.artistsService.deleteArtist(param.artistId);
+  async deleteArtist(@Param() param: ArtistIdParam): Promise<void> {
+    await this.artistsService.deleteArtist(param.artistId);
   }
 }

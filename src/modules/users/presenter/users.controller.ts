@@ -15,9 +15,9 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { StatusCodes } from 'http-status-codes';
+import { UserWithoutPassword } from 'src/common/entities/user';
 import { UsersService } from '../service/users.service';
 import { UserResource } from './resources/user.resource';
-import { UserWithoutPassword } from 'src/common/entities/user';
 import { UserIdParam } from './params/user-id.param';
 import { CreateUserBody } from './bodies/create-user.body';
 import { ChangeUserBody } from './bodies/change-user.body';
@@ -37,8 +37,8 @@ export class UsersController {
     type: GetAllUsersResponse,
   })
   @Get()
-  getAllUsers(): UserWithoutPassword[] {
-    const users = this.usersService.getAllUsers();
+  async getAllUsers(): Promise<UserWithoutPassword[]> {
+    const users = await this.usersService.getAllUsers();
 
     return users.map((user) => this.userResource.convert(user));
   }
@@ -52,8 +52,8 @@ export class UsersController {
     status: StatusCodes.NOT_FOUND,
   })
   @Get(':user_id')
-  getUserById(@Param() param: UserIdParam): UserWithoutPassword {
-    const user = this.usersService.getUserById(param.user_id);
+  async getUserById(@Param() param: UserIdParam): Promise<UserWithoutPassword> {
+    const user = await this.usersService.getUserById(param.user_id);
 
     return this.userResource.convert(user);
   }
@@ -64,8 +64,8 @@ export class UsersController {
   })
   @Post()
   @HttpCode(StatusCodes.CREATED)
-  addUser(@Body() body: CreateUserBody): UserWithoutPassword {
-    const user = this.usersService.addUser(body);
+  async addUser(@Body() body: CreateUserBody): Promise<UserWithoutPassword> {
+    const user = await this.usersService.addUser(body);
 
     return this.userResource.convert(user);
   }
@@ -83,11 +83,11 @@ export class UsersController {
     status: StatusCodes.FORBIDDEN,
   })
   @Put(':user_id')
-  updateUser(
+  async updateUser(
     @Param() param: UserIdParam,
     @Body() body: ChangeUserBody,
-  ): UserWithoutPassword {
-    const user = this.usersService.updateUser(param.user_id, body);
+  ): Promise<UserWithoutPassword> {
+    const user = await this.usersService.updateUser(param.user_id, body);
 
     return this.userResource.convert(user);
   }
@@ -101,7 +101,7 @@ export class UsersController {
   })
   @Delete(':user_id')
   @HttpCode(StatusCodes.NO_CONTENT)
-  deleteUser(@Param() param: UserIdParam): void {
-    this.usersService.deleteUser(param.user_id);
+  async deleteUser(@Param() param: UserIdParam): Promise<void> {
+    await this.usersService.deleteUser(param.user_id);
   }
 }

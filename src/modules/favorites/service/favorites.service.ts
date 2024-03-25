@@ -7,6 +7,7 @@ import { AlbumsService } from 'src/modules/album/service/albums.service';
 import { ArtistsService } from 'src/modules/artists/service/artists.service';
 import { FavoritesRepository } from '../data/favorites.repository';
 import { TracksService } from 'src/modules/tracks/service/tracks.service';
+import { Favorites } from 'src/common/entities/favorites';
 
 @Injectable()
 export class FavoritesService {
@@ -17,97 +18,83 @@ export class FavoritesService {
     private readonly tracksService: TracksService,
   ) {}
 
-  getAllFavorites() {
-    const favorites = this.favoritesRepository.getAllFavorites();
+  async getAllFavorites(): Promise<Favorites> {
+    const favorites =
+      await this.favoritesRepository.getFavoritesWithRelations();
 
-    const favArtists = favorites.artists.map((artistId) => {
-      return this.artistsService.getArtistById(artistId);
-    });
-
-    const favAlbums = favorites.albums.map((albumId) => {
-      return this.albumsService.getAlbumById(albumId);
-    });
-
-    const favTracks = favorites.tracks.map((trackId) => {
-      return this.tracksService.getTrackById(trackId);
-    });
-
-    return {
-      artists: favArtists,
-      albums: favAlbums,
-      tracks: favTracks,
-    };
+    return favorites;
   }
 
-  addTrack(trackId: string) {
+  async addTrack(trackId: string): Promise<void> {
     try {
-      this.tracksService.getTrackById(trackId);
+      await this.tracksService.getTrackById(trackId);
     } catch {
       throw new UnprocessableEntityException('Entity absence');
     }
 
-    this.favoritesRepository.addTrack(trackId);
+    await this.favoritesRepository.addTrackToFav(trackId);
   }
 
-  addAlbum(albumId: string) {
+  async addAlbum(albumId: string): Promise<void> {
     try {
-      this.albumsService.getAlbumById(albumId);
+      await this.albumsService.getAlbumById(albumId);
     } catch {
       throw new UnprocessableEntityException('Entity absence');
     }
 
-    this.favoritesRepository.addAlbum(albumId);
+    await this.favoritesRepository.addAlbumToFav(albumId);
   }
 
-  addArtist(artistId: string) {
+  async addArtist(artistId: string): Promise<void> {
     try {
-      this.artistsService.getArtistById(artistId);
+      await this.artistsService.getArtistById(artistId);
     } catch {
       throw new UnprocessableEntityException('Artist absence');
     }
 
-    this.favoritesRepository.addArtist(artistId);
+    this.favoritesRepository.addArtistToFav(artistId);
   }
 
-  deleteTrack(trackId: string) {
-    this.tracksService.getTrackById(trackId);
+  async deleteTrack(trackId: string): Promise<void> {
+    await this.tracksService.getTrackById(trackId);
 
     const isTrackInFavorites =
-      this.favoritesRepository.checkIfTrackExistsFavorite(trackId);
+      await this.favoritesRepository.checkIfTrackExistsFavorite(trackId);
+
     if (!isTrackInFavorites) {
       throw new NotFoundException(
         `Track with id ${trackId} not found in favorites`,
       );
     }
 
-    this.favoritesRepository.deleteTrack(trackId);
+    await this.favoritesRepository.deleteTrackFromFav(trackId);
   }
 
-  deleteAlbum(albumId: string) {
-    this.albumsService.getAlbumById(albumId);
+  async deleteAlbum(albumId: string): Promise<void> {
+    await this.albumsService.getAlbumById(albumId);
 
     const isAlbumInFavorites =
-      this.favoritesRepository.checkIfAlbumExistsFavorite(albumId);
+      await this.favoritesRepository.checkIfAlbumExistsFavorite(albumId);
     if (!isAlbumInFavorites) {
       throw new NotFoundException(
         `Album with id ${albumId} not found in favorites`,
       );
     }
 
-    this.favoritesRepository.deleteAlbum(albumId);
+    await this.favoritesRepository.deleteAlbumFromFavs(albumId);
   }
 
-  deleteArtist(artistId: string): void {
-    this.artistsService.getArtistById(artistId);
+  async deleteArtist(artistId: string): Promise<void> {
+    await this.artistsService.getArtistById(artistId);
 
     const isArtistInFavorites =
-      this.favoritesRepository.checkIfArtistExistsFavorite(artistId);
+      await this.favoritesRepository.checkIfArtistExistsFavorite(artistId);
     if (!isArtistInFavorites) {
       throw new NotFoundException(
         `Artist with id ${artistId} not found in favorites`,
       );
     }
 
-    this.favoritesRepository.deleteArtist(artistId);
+    await this.favoritesRepository.deleteArtistFromFav(artistId);
   }
 }

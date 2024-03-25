@@ -10,12 +10,12 @@ export class TracksService {
     private readonly favoritesRepository: FavoritesRepository,
   ) {}
 
-  getAllTracks(): Track[] {
+  getAllTracks(): Promise<Track[]> {
     return this.tracksRepository.getAllTracks();
   }
 
-  getTrackById(id: string): Track {
-    const track = this.tracksRepository.getTrackById(id);
+  async getTrackById(id: string): Promise<Track> {
+    const track = await this.tracksRepository.getTrackById(id);
 
     if (!track) {
       throw new NotFoundException(`Track with id ${id} not found`);
@@ -24,12 +24,12 @@ export class TracksService {
     return track;
   }
 
-  addTrack(dto: Omit<Track, 'id'>): Track {
+  addTrack(dto: Omit<Track, 'id'>): Promise<Track> {
     return this.tracksRepository.addTrack(dto);
   }
 
-  changeTrack(id: string, changes: Omit<Track, 'id'>): Track {
-    const track = this.tracksRepository.getTrackById(id);
+  async changeTrack(id: string, changes: Omit<Track, 'id'>): Promise<Track> {
+    const track = await this.tracksRepository.getTrackById(id);
 
     if (!track) {
       throw new NotFoundException(`Track with id ${id} not found`);
@@ -37,14 +37,14 @@ export class TracksService {
     return this.tracksRepository.changeTrack(id, changes);
   }
 
-  deleteTrack(id: string): void {
-    const track = this.tracksRepository.getTrackById(id);
+  async deleteTrack(id: string): Promise<void> {
+    const track = await this.tracksRepository.getTrackById(id);
 
     if (!track) {
       throw new NotFoundException(`Track with id ${id} not found`);
     }
 
-    this.tracksRepository.deleteTrack(id);
-    this.favoritesRepository.deleteTrack(id);
+    await this.tracksRepository.deleteTrack(id);
+    await this.favoritesRepository.deleteTrackFromFav(id);
   }
 }

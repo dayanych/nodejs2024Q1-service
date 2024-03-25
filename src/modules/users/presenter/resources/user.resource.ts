@@ -6,8 +6,8 @@ export class UserResource {
       id: payload.id,
       login: payload.login,
       version: payload.version,
-      createdAt: payload.createdAt,
-      updatedAt: payload.updatedAt,
+      createdAt: payload.createdAt.getTime(),
+      updatedAt: payload.updatedAt.getTime(),
     };
   }
 }

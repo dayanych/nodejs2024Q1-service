@@ -1,61 +1,65 @@
 import { v4 as uuidv4 } from 'uuid';
 import { Injectable } from '@nestjs/common';
 import { Album } from 'src/common/entities/album';
+import { PrismaRepository } from 'src/modules/prisma/data/prisma.repository';
 
 @Injectable()
 export class AlbumsRepository {
-  private albums: Album[] = [];
+  constructor(private prismaRepository: PrismaRepository) {}
 
-  getAllAlbums(): Album[] {
-    return this.albums;
+  getAllAlbums(): Promise<Album[]> {
+    return this.prismaRepository.album.findMany();
   }
 
-  getAlbumById(id: string): Album {
-    const album = this.albums.find((album) => album.id === id);
-
-    return album;
+  getAlbumById(id: string): Promise<Album | null> {
+    return this.prismaRepository.album.findUnique({
+      where: {
+        id,
+      },
+    });
   }
 
-  addAlbum(album: { name: string; year: number; artistId: string }): Album {
-    const newAlbum: Album = {
-      id: uuidv4(),
-      name: album.name,
-      year: album.year,
-      artistId: album.artistId,
-    };
-
-    this.albums.push(newAlbum);
+  async addAlbum(album: {
+    name: string;
+    year: number;
+    artistId: string;
+  }): Promise<Album> {
+    const newAlbum = await this.prismaRepository.album.create({
+      data: {
+        id: uuidv4(),
+        name: album.name,
+        year: album.year,
+        artistId: album.artistId,
+      },
+    });
 
     return newAlbum;
   }
 
-  changeAlbum(id: string, changes: { name: string; year: number }): Album {
-    this.albums = this.albums.map((album) => {
-      if (album.id === id) {
-        return {
-          ...album,
-          ...changes,
-        };
-      }
-      return album;
+  changeAlbum(
+    id: string,
+    changes: { name: string; year: number },
+  ): Promise<Album | null> {
+    return this.prismaRepository.album.update({
+      where: {
+        id,
+      },
+      data: changes,
     });
-
-    return this.getAlbumById(id);
   }
 
-  deleteAlbum(id: string): void {
-    this.albums = this.albums.filter((album) => album.id !== id);
+  async deleteAlbum(id: string): Promise<void> {
+    await this.prismaRepository.album.delete({ where: { id } });
   }
 
-  deleteArtistFromAlbum(artistId: string): void {
-    this.albums = this.albums.map((album) => {
-      if (album.artistId === artistId) {
-        return {
-          ...album,
-          artistId: null,
-        };
-      }
-      return album;
+  async deleteArtistFromAlbum(artistId: string): Promise<void> {
+    await this.prismaRepository.album.updateMany({
+      where: {
+        artistId,
+      },
+      data: {
+        artistId: null,
+      },
     });
   }
 }

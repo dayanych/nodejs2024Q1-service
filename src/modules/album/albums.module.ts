@@ -5,9 +5,15 @@ import { AlbumsService } from './service/albums.service';
 import { AlbumsRepository } from './data/albums.repository';
 import { TracksModule } from '../tracks/tracks.module';
 import { FavoritesModule } from '../favorites/favorites.module';
+import { PrismaModule } from '../prisma/prisma.module';
 
 @Module({
-  imports: [forwardRef(() => ArtistsModule), TracksModule, FavoritesModule],
+  imports: [
+    forwardRef(() => ArtistsModule),
+    TracksModule,
+    FavoritesModule,
+    PrismaModule,
+  ],
   controllers: [AlbumsController],
   providers: [AlbumsRepository, AlbumsService],
   exports: [AlbumsRepository, AlbumsService],

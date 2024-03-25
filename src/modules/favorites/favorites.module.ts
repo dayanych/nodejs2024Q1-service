@@ -5,12 +5,14 @@ import { FavoritesRepository } from './data/favorites.repository';
 import { AlbumsModule } from '../album/albums.module';
 import { ArtistsModule } from '../artists/artists.module';
 import { TracksModule } from '../tracks/tracks.module';
+import { PrismaModule } from '../prisma/prisma.module';
 
 @Module({
   imports: [
     forwardRef(() => AlbumsModule),
     forwardRef(() => ArtistsModule),
     forwardRef(() => TracksModule),
+    PrismaModule,
   ],
   controllers: [FavoritesController],
   providers: [FavoritesService, FavoritesRepository],

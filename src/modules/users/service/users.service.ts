@@ -10,12 +10,12 @@ import { User } from 'src/common/entities/user';
 export class UsersService {
   constructor(private usersRepository: UsersRepository) {}
 
-  getAllUsers(): User[] {
+  getAllUsers(): Promise<User[]> {
     return this.usersRepository.getAllUsers();
   }
 
-  getUserById(id: string): User {
-    const user = this.usersRepository.getUserById(id);
+  async getUserById(id: string): Promise<User> {
+    const user = await this.usersRepository.getUserById(id);
 
     if (!user) {
       throw new NotFoundException(`User with id ${id} not found`);
@@ -24,15 +24,15 @@ export class UsersService {
     return user;
   }
 
-  addUser(user: { login: string; password: string }): User {
+  addUser(user: { login: string; password: string }): Promise<User> {
     return this.usersRepository.addUser(user);
   }
 
-  updateUser(
+  async updateUser(
     id: string,
     changes: { oldPassword: string; newPassword: string },
-  ): User {
-    const user = this.usersRepository.getUserById(id);
+  ): Promise<User> {
+    const user = await this.usersRepository.getUserById(id);
 
     if (!user) {
       throw new NotFoundException(`User with id ${id} not found`);
@@ -49,13 +49,13 @@ export class UsersService {
     return updatedUser;
   }
 
-  deleteUser(id: string): void {
-    const user = this.usersRepository.getUserById(id);
+  async deleteUser(id: string): Promise<void> {
+    const user = await this.usersRepository.getUserById(id);
 
     if (!user) {
       throw new NotFoundException(`User with id ${id} not found`);
     }
 
-    this.usersRepository.deleteUser(id);
+    await this.usersRepository.deleteUser(id);
   }
 }

@@ -14,12 +14,12 @@ export class AlbumsService {
     private readonly favoritesRepository: FavoritesRepository,
   ) {}
 
-  getAllAlbums(): Album[] {
+  getAllAlbums(): Promise<Album[]> {
     return this.albumsRepository.getAllAlbums();
   }
 
-  getAlbumById(id: string): Album {
-    const album = this.albumsRepository.getAlbumById(id);
+  async getAlbumById(id: string): Promise<Album> {
+    const album = await this.albumsRepository.getAlbumById(id);
 
     if (!album) {
       throw new NotFoundException(`Album with id ${id} not found`);
@@ -28,41 +28,48 @@ export class AlbumsService {
     return album;
   }
 
-  addAlbum(album: { name: string; year: number; artistId: string }): Album {
+  async addAlbum(album: {
+    name: string;
+    year: number;
+    artistId: string;
+  }): Promise<Album> {
     if (album.artistId) {
-      this.artistsService.getArtistById(album.artistId);
+      await this.artistsService.getArtistById(album.artistId);
     }
 
     return this.albumsRepository.addAlbum(album);
   }
 
-  updateAlbum(id: string, changes: { name: string; year: number }): Album {
-    const album = this.albumsRepository.getAlbumById(id);
+  async updateAlbum(
+    id: string,
+    changes: { name: string; year: number },
+  ): Promise<Album> {
+    const album = await this.albumsRepository.getAlbumById(id);
 
     if (!album) {
       throw new NotFoundException(`Album with id ${id} not found`);
     }
 
     if (album.artistId) {
-      this.artistsService.getArtistById(album.artistId);
+      await this.artistsService.getArtistById(album.artistId);
     }
 
     return this.albumsRepository.changeAlbum(id, changes);
   }
 
-  deleteAlbum(id: string): void {
-    const album = this.albumsRepository.getAlbumById(id);
+  async deleteAlbum(id: string): Promise<void> {
+    const album = await this.albumsRepository.getAlbumById(id);
 
     if (!album) {
       throw new NotFoundException(`Album with id ${id} not found`);
     }
 
-    this.albumsRepository.deleteAlbum(id);
-    this.tracksRepository.deleteAlbumFromTrack(id);
-    this.favoritesRepository.deleteAlbum(id);
+    await this.albumsRepository.deleteAlbum(id);
+    await this.tracksRepository.deleteAlbumFromTrack(id);
+    await this.favoritesRepository.deleteAlbumFromFavs(id);
   }
 
-  deleteArtistFromAlbum(artistId: string): void {
-    this.albumsRepository.deleteArtistFromAlbum(artistId);
+  async deleteArtistFromAlbum(artistId: string): Promise<void> {
+    await this.albumsRepository.deleteArtistFromAlbum(artistId);
   }
 }

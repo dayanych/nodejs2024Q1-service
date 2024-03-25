@@ -6,6 +6,7 @@ import { TrackIdParam } from 'src/modules/tracks/presenter/params/track-id.param
 import { AlbumIdParam } from 'src/modules/album/presenter/params/album-id.param';
 import { ArtistIdParam } from 'src/modules/artists/presenter/params/artist-id.param';
 import { StatusCodes } from 'http-status-codes';
+import { Favorites } from 'src/common/entities/favorites';
 
 @ApiTags('Favorites')
 @Controller('favs')
@@ -17,9 +18,7 @@ export class FavoritesController {
     type: FavoriteResponse,
   })
   @Get()
-  getAllFavorites() {
-    const favorites = this.favoritesService.getAllFavorites();
-    console.log(favorites);
+  getAllFavorites(): Promise<Favorites> {
     return this.favoritesService.getAllFavorites();
   }
 
@@ -31,8 +30,8 @@ export class FavoritesController {
   })
   @Post('track/:trackId')
   @HttpCode(StatusCodes.CREATED)
-  addTrack(@Param() param: TrackIdParam) {
-    this.favoritesService.addTrack(param.trackId);
+  async addTrack(@Param() param: TrackIdParam): Promise<void> {
+    await this.favoritesService.addTrack(param.trackId);
   }
 
   @ApiOkResponse({
@@ -43,8 +42,8 @@ export class FavoritesController {
   })
   @Delete('track/:trackId')
   @HttpCode(StatusCodes.NO_CONTENT)
-  deleteTrack(@Param() param: TrackIdParam) {
-    this.favoritesService.deleteTrack(param.trackId);
+  async deleteTrack(@Param() param: TrackIdParam): Promise<void> {
+    await this.favoritesService.deleteTrack(param.trackId);
   }
 
   @ApiOkResponse({
@@ -55,8 +54,8 @@ export class FavoritesController {
   })
   @Post('album/:albumId')
   @HttpCode(StatusCodes.CREATED)
-  addAlbum(@Param() param: AlbumIdParam) {
-    this.favoritesService.addAlbum(param.albumId);
+  async addAlbum(@Param() param: AlbumIdParam): Promise<void> {
+    await this.favoritesService.addAlbum(param.albumId);
   }
 
   @ApiOkResponse({
@@ -67,8 +66,8 @@ export class FavoritesController {
   })
   @Delete('album/:albumId')
   @HttpCode(StatusCodes.NO_CONTENT)
-  deleteAlbum(@Param() param: AlbumIdParam) {
-    this.favoritesService.deleteAlbum(param.albumId);
+  async deleteAlbum(@Param() param: AlbumIdParam): Promise<void> {
+    await this.favoritesService.deleteAlbum(param.albumId);
   }
 
   @ApiOkResponse({
@@ -79,8 +78,8 @@ export class FavoritesController {
   })
   @Post('artist/:artistId')
   @HttpCode(StatusCodes.CREATED)
-  addArtist(@Param() param: ArtistIdParam) {
-    this.favoritesService.addArtist(param.artistId);
+  async addArtist(@Param() param: ArtistIdParam): Promise<void> {
+    await this.favoritesService.addArtist(param.artistId);
   }
 
   @ApiOkResponse({
@@ -91,7 +90,7 @@ export class FavoritesController {
   })
   @Delete('artist/:artistId')
   @HttpCode(StatusCodes.NO_CONTENT)
-  deleteArtist(@Param() param: ArtistIdParam) {
-    this.favoritesService.deleteArtist(param.artistId);
+  async deleteArtist(@Param() param: ArtistIdParam): Promise<void> {
+    await this.favoritesService.deleteArtist(param.artistId);
   }
 }

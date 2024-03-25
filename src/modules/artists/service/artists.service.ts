@@ -14,11 +14,11 @@ export class ArtistsService {
     private readonly favoritesRepository: FavoritesRepository,
   ) {}
 
-  getAllArtists(): Artist[] {
+  getAllArtists(): Promise<Artist[]> {
     return this.artistsRepository.getAllArtists();
   }
 
-  getArtistById(id: string): Artist | null {
+  getArtistById(id: string): Promise<Artist | null> {
     const artist = this.artistsRepository.getArtistById(id);
 
     if (!artist) {
@@ -28,12 +28,15 @@ export class ArtistsService {
     return artist;
   }
 
-  addArtist(artist: { name: string; grammy: boolean }): Artist {
+  addArtist(artist: { name: string; grammy: boolean }): Promise<Artist> {
     return this.artistsRepository.addArtist(artist);
   }
 
-  updateArtist(id: string, changes: { name: string; grammy: boolean }): Artist {
-    const artist = this.artistsRepository.getArtistById(id);
+  async updateArtist(
+    id: string,
+    changes: { name: string; grammy: boolean },
+  ): Promise<Artist> {
+    const artist = await this.artistsRepository.getArtistById(id);
 
     if (!artist) {
       throw new NotFoundException(`Artist with id ${id} not found`);
@@ -42,16 +45,16 @@ export class ArtistsService {
     return this.artistsRepository.updateArtist(id, changes);
   }
 
-  deleteArtist(id: string): void {
-    const artist = this.artistsRepository.getArtistById(id);
+  async deleteArtist(id: string): Promise<void> {
+    const artist = await this.artistsRepository.getArtistById(id);
 
     if (!artist) {
       throw new NotFoundException(`Artist with id ${id} not found`);
     }
 
-    this.artistsRepository.deleteArtist(id);
-    this.albumsRepository.deleteArtistFromAlbum(artist.id);
-    this.tracksRepository.deleteArtistFromTracks(artist.id);
-    this.favoritesRepository.deleteArtist(id);
+    await this.artistsRepository.deleteArtist(id);
+    await this.albumsRepository.deleteArtistFromAlbum(artist.id);
+    await this.tracksRepository.deleteArtistFromTracks(artist.id);
+    await this.favoritesRepository.deleteArtistFromFav(id);
   }
 }
