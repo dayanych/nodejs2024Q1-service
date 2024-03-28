@@ -16,6 +16,7 @@ git clone {repository URL}
 ## Preparing
 1. Install [Docker](https://docs.docker.com/engine/install/)
 2. Create .env by using .env.example
+3. Run `npm ci`
 
 ## Run Docker
 ```
