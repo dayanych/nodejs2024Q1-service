@@ -14,50 +14,68 @@ datasource db {
 }
 
 model Artist {
-  id          String    @id @default(uuid())
-  name        String
-  grammy      Boolean
-  albums      Album[]
-  tracks      Track[]
-  favorites   Favorites?  @relation("FavoriteArtists", fields: [favoriteId], references: [id])
-  favoriteId  String?
+  id                  String    @id @default(uuid())
+  name                String
+  grammy              Boolean
+  albums              Album[]
+  tracks              Track[]
+  favorites           Favorites?  @relation("FavoriteArtists", fields: [favoriteId], references: [id])
+  favoriteId          String?
 }
 
 model Album {
-  id          String    @id @default(uuid())
-  name        String
-  year        Int
-  artist      Artist?   @relation(fields: [artistId], references: [id])
-  artistId    String?
-  tracks      Track[]
-  favorites   Favorites?  @relation("FavoriteAlbums", fields: [favoriteId], references: [id])
-  favoriteId  String?
+  id                  String    @id @default(uuid())
+  name                String
+  year                Int
+  artist              Artist?   @relation(fields: [artistId], references: [id])
+  artistId            String?
+  tracks              Track[]
+  favorites           Favorites?  @relation("FavoriteAlbums", fields: [favoriteId], references: [id])
+  favoriteId          String?
 }
 
 model Track {
-  id          String    @id @default(uuid())
-  name        String
-  artist      Artist?   @relation(fields: [artistId], references: [id])
-  artistId    String?
-  album       Album?    @relation(fields: [albumId], references: [id])
-  albumId     String?
-  duration    Int
-  favorites   Favorites?  @relation("FavoriteTracks", fields: [favoriteId], references: [id])
-  favoriteId  String?
+  id                  String    @id @default(uuid())
+  name                String
+  artist              Artist?   @relation(fields: [artistId], references: [id])
+  artistId            String?
+  album               Album?    @relation(fields: [albumId], references: [id])
+  albumId             String?
+  duration            Int
+  favorites           Favorites?  @relation("FavoriteTracks", fields: [favoriteId], references: [id])
+  favoriteId          String?
 }
 
 model User {
-  id          String    @id @default(uuid())
-  login       String
-  password    String
-  version     Int       @default(1)
-  createdAt   DateTime  @db.Timestamp() @default(now())
-  updatedAt   DateTime  @db.Timestamp() @updatedAt()
+  id                  String    @id @default(uuid())
+  login               String
+  password            String
+  version             Int       @default(1)
+  accessToken         UserAccessToken?
+  refreshToken        UserRefreshToken?
+  createdAt           DateTime  @db.Timestamp() @default(now())
+  updatedAt           DateTime  @db.Timestamp() @updatedAt()
 }
 
 model Favorites {
-  id        String    @id @default(uuid())
-  artists   Artist[]  @relation("FavoriteArtists")
-  albums    Album[]   @relation("FavoriteAlbums")
-  tracks    Track[]   @relation("FavoriteTracks")
+  id                  String    @id @default(uuid())
+  artists             Artist[]  @relation("FavoriteArtists")
+  albums              Album[]   @relation("FavoriteAlbums")
+  tracks              Track[]   @relation("FavoriteTracks")
+}
+
+model UserAccessToken {
+  id                  String    @id @default(uuid())
+  user                User      @relation(fields: [userId], references: [id])
+  userId              String    @unique
+  token               String
+  expiresAt           DateTime  @db.Timestamp()
+}
+
+model UserRefreshToken {
+  id                  String    @id @default(uuid())
+  user                User      @relation(fields: [userId], references: [id])
+  userId              String    @unique
+  token               String
+  expiresAt           DateTime  @db.Timestamp()
 }

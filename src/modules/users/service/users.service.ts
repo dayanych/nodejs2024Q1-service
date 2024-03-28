@@ -1,3 +1,4 @@
+import { compare, hashSync } from 'bcrypt';
 import {
   ForbiddenException,
   Injectable,
@@ -24,8 +25,23 @@ export class UsersService {
     return user;
   }
 
-  addUser(user: { login: string; password: string }): Promise<User> {
-    return this.usersRepository.addUser(user);
+  async getUserByLogin(login: string): Promise<User> {
+    const user = await this.usersRepository.getUserByLogin(login);
+
+    if (!user) {
+      throw new NotFoundException(`User with login ${login} not found`);
+    }
+
+    return user;
+  }
+
+  async addUser(user: { login: string; password: string }): Promise<User> {
+    const hashedPassword = hashSync(user.password, 12);
+
+    return this.usersRepository.addUser({
+      login: user.login,
+      password: hashedPassword,
+    });
   }
 
   async updateUser(
@@ -38,12 +54,19 @@ export class UsersService {
       throw new NotFoundException(`User with id ${id} not found`);
     }
 
-    if (user.password !== changes.oldPassword) {
+    const isCurrentPasswordValid = await compare(
+      changes.oldPassword,
+      user.password,
+    );
+
+    if (!isCurrentPasswordValid) {
       throw new ForbiddenException('Old password is incorrect');
     }
 
+    const hashedNewPassword = hashSync(changes.newPassword, 12);
+
     const updatedUser = this.usersRepository.updateUser(id, {
-      password: changes.newPassword,
+      password: hashedNewPassword,
       version: user.version + 1,
     });
 

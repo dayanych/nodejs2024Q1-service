@@ -17,6 +17,12 @@ export class UsersRepository {
     });
   }
 
+  getUserByLogin(login: string): Promise<User | null> {
+    return this.prismaRepository.user.findFirst({
+      where: { login },
+    });
+  }
+
   async addUser(user: { login: string; password: string }): Promise<User> {
     const newUser = await this.prismaRepository.user.create({
       data: {
