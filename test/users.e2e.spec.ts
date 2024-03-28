@@ -153,18 +153,19 @@ describe('Users (e2e)', () => {
 
       const { id: createdId } = creationResponse.body;
 
+      
       expect(creationResponse.status).toBe(StatusCodes.CREATED);
-
+      
       const updateResponse = await unauthorizedRequest
-        .put(usersRoutes.update(createdId))
-        .set(commonHeaders)
-        .send({
-          oldPassword: createUserDto.password,
-          newPassword: 'NEW_PASSWORD',
-        });
-
+      .put(usersRoutes.update(createdId))
+      .set(commonHeaders)
+      .send({
+        oldPassword: createUserDto.password,
+        newPassword: 'NEW_PASSWORD',
+      });
+      
       expect(updateResponse.statusCode).toBe(StatusCodes.OK);
-
+      
       const {
         id: updatedId,
         version,
@@ -172,7 +173,7 @@ describe('Users (e2e)', () => {
         createdAt,
         updatedAt,
       } = updateResponse.body;
-
+      
       expect(login).toBe(createUserDto.login);
       expect(updateResponse.body).not.toHaveProperty('password');
       expect(validate(updatedId)).toBe(true);
